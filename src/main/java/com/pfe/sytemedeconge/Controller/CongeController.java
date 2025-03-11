@@ -136,8 +136,7 @@ public class CongeController {
         // Mettre à jour le statut de la demande de congé
         conge.setStatus(status);
         congeRepository.save(conge);
-        String emoji = status.equals("APPROUVE") ? "✅" : "❌";
-        String notificationMessage = "Votre demande de congé a été " + status.toLowerCase() + " " + emoji + ".";
+        String notificationMessage = "Votre demande de congé a été " + status.toLowerCase() ;
         notificationService.notifyUser(conge.getUtilisateur().getId(), notificationMessage);
 
 
