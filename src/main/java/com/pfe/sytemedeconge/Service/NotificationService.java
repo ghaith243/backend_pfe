@@ -25,15 +25,17 @@ public class NotificationService {
 
     // Envoyer une notification au chef et à l'admin
     public void notifyChefAndAdmin(String message, Utilisateur utilisateur) {
-        // Envoyer via WebSocket
-        messagingTemplate.convertAndSend("/topic/notifications", message);
 
-        // Enregistrer en base de données
-        Notification notification = new Notification();
-        notification.setMessage(message);
-        notification.setCreatedAt(LocalDateTime.now());
-        notification.setUtilisateur(utilisateur);
-        notificationRepository.save(notification);
+
+            // Envoyer via WebSocket
+            messagingTemplate.convertAndSend("/topic/notifications", message);
+
+            // Enregistrer en base de données
+            Notification notification = new Notification();
+            notification.setMessage(message);
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setUtilisateur(utilisateur);
+            notificationRepository.save(notification);
     }
 
     // Envoyer une notification à l'utilisateur
