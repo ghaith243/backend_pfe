@@ -86,11 +86,9 @@ public class CongeController {
         notificationService.notifyChefAndAdmin(notificationMessage, utilisateur);
 
 
-        //return ResponseEntity.ok("Demande de congé soumise avec succès !");
-        return ResponseEntity.ok(Map.of("message", "Demande de congé soumise avec succès !"));
-
-
-
+        return ResponseEntity.ok("Demande de congé soumise avec succès !");
+     
+       
     }
 
     // Endpoint pour valider ou rejeter une demande de congé
@@ -138,12 +136,11 @@ public class CongeController {
         // Mettre à jour le statut de la demande de congé
         conge.setStatus(status);
         congeRepository.save(conge);
-        String notificationMessage = "Votre demande de congé a été " + status.toLowerCase() ;
+        String notificationMessage = "Votre demande de congé a été " + status.toLowerCase() + ".";
         notificationService.notifyUser(conge.getUtilisateur().getId(), notificationMessage);
 
 
-        //return ResponseEntity.ok("Statut mis à jour avec succès !");
-        return ResponseEntity.ok(Map.of("message", "Statut mis à jour avec succès !"));
+        return ResponseEntity.ok("Statut mis à jour avec succès !");
     }
 
     // Endpoint pour récupérer les demandes de congé d'un utilisateur spécifique

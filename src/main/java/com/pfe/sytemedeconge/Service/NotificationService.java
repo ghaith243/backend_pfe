@@ -28,8 +28,6 @@ public class NotificationService {
 
     // Envoyer une notification au chef et à l'admin
     public void notifyChefAndAdmin(String message, Utilisateur utilisateur) {
-<<<<<<< HEAD
-=======
     	  Department service =  utilisateur.getService();
           
           if (service != null) {
@@ -61,18 +59,13 @@ public class NotificationService {
 
         // Envoyer via WebSocket
         messagingTemplate.convertAndSend("/topic/user/" + userId, jsonMessage);
->>>>>>> 254b235 (profile et notif change)
 
-
-            // Envoyer via WebSocket
-            messagingTemplate.convertAndSend("/topic/notifications", message);
-
-            // Enregistrer en base de données
-            Notification notification = new Notification();
-            notification.setMessage(message);
-            notification.setCreatedAt(LocalDateTime.now());
-            notification.setUtilisateur(utilisateur);
-            notificationRepository.save(notification);
+        // Enregistrer en base de données
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setUtilisateur(utilisateur);
+        notificationRepository.save(notification);
     }
     public List<Notification> getAllNotifications(Long utilisateurId) {
         return notificationRepository.findByUtilisateurIdOrderByCreatedAtDesc(utilisateurId);
