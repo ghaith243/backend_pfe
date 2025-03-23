@@ -1,5 +1,6 @@
 package com.pfe.sytemedeconge.Controller;
 import java.util.List;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ import com.pfe.sytemedeconge.Service.JwtUtil;
 import com.pfe.sytemedeconge.Service.NotificationService;
 
 import Model.Conge;
-import Model.Service;
+import Model.Department;
+
 import Model.Utilisateur;
 import Repository.CongeRepository;
 import Repository.UtilisateurRepository;
@@ -156,7 +158,7 @@ public class CongeController {
     // Endpoint pour récupérer les demandes de congé par service
     @GetMapping("/service/{serviceId}")
     public ResponseEntity<?> getCongesByService(@PathVariable Long serviceId) {
-    	Service service= new Service();
+    	Department service= new Department();
     	service.setId(serviceId);
         List<Conge> conges = congeService.getCongesByService(serviceId);
         return ResponseEntity.ok(conges);

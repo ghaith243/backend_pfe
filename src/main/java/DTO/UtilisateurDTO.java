@@ -1,6 +1,7 @@
 package DTO;
 
-import Model.Service;
+import Model.Department;
+
 
 public class UtilisateurDTO {
     private Long id;
@@ -9,7 +10,7 @@ public class UtilisateurDTO {
     private String role;
     private Long serviceId;  // Ajouter l'ID du service
 
-    public UtilisateurDTO(Long id, String nom, String email, String role, Service service) {
+    public UtilisateurDTO(Long id, String nom, String email, String role, Department service) {
         this.id = id;
         this.nom = nom;
         this.email = email;

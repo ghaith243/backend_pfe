@@ -13,7 +13,7 @@ public class Conge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_conge;
 
-    private String type; // Annuelle, Maladie, Maternité, Exceptionnel, etc.
+    private String type; // Annuelle, Maladie, Modernity, Exceptionnel, etc.
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private String status; 
@@ -26,7 +26,7 @@ public class Conge {
     @JoinColumn(name = "service_id", nullable = false)
     
     @JsonIgnore 
-    private Service service;
+    private Department service;
 
     public Long getId() {
         return id_conge;
@@ -93,11 +93,11 @@ public class Conge {
 		this.utilisateur = utilisateur;
 	}
 
-	public Service getService() {
+	public Department getService() {
 		return service;
 	}
 
-	public void setService(Service service) {
+	public void setService(Department service) {
 		this.service = service;
 	}
 

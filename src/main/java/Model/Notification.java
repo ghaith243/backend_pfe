@@ -14,12 +14,14 @@ public class Notification {
 
     private String message;
     private LocalDateTime createdAt;
+    private boolean isRead = false;
 
     @ManyToOne
     @JoinColumn(name = "utilisateur_id", nullable = false)
     private Utilisateur utilisateur;
 
     // Getters et setters
+    
     public Long getId() {
         return id;
     }
@@ -51,4 +53,13 @@ public class Notification {
     public void setUtilisateur(Utilisateur utilisateur) {
         this.utilisateur = utilisateur;
     }
+
+	public boolean isRead() {
+		return isRead;
+	}
+
+	public void setRead(boolean isRead) {
+		this.isRead = isRead;
+	}
+    
 }

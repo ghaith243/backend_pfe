@@ -8,5 +8,10 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findByUtilisateurId(Long utilisateurId);
+    
+    // Récupère toutes les notifications d'un utilisateur
+    List<Notification> findByUtilisateurIdOrderByCreatedAtDesc(Long utilisateurId);
+    
+    // Récupère uniquement les notifications non lues d'un utilisateur
+    List<Notification> findByUtilisateurIdAndIsReadFalse(Long utilisateurId);
 }

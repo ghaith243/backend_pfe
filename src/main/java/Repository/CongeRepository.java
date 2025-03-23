@@ -2,6 +2,7 @@ package Repository;
 
 
 import java.time.LocalDate;
+
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import Model.Conge;
-import Model.Service;
+import Model.Department;
 import Model.Utilisateur;
 @Repository
 

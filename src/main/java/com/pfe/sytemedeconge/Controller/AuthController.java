@@ -1,6 +1,7 @@
 package com.pfe.sytemedeconge.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -14,8 +15,9 @@ import com.pfe.sytemedeconge.Service.JwtUtil;
 
 import DTO.AuthRequest;
 import DTO.AuthResponse;
+import Model.Department;
 import Model.Role;
-import Model.Service;  // Assurez-vous d'importer la classe Service
+ 
 import Model.Utilisateur;
 import Repository.RoleRepository;
 import Repository.ServiceRepository;  // Assurez-vous d'importer le repository de Service
@@ -51,7 +53,7 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("Rôle non trouvé"));
 
         // Récupérer un service à assigner à l'utilisateur (ici, on suppose que le service est envoyé avec la requête)
-        Service service = serviceRepository.findById(request.getServiceId())  // Supposons que le service soit envoyé avec la requête
+        Department service = serviceRepository.findById(request.getServiceId())  // Supposons que le service soit envoyé avec la requête
                 .orElseThrow(() -> new RuntimeException("Service non trouvé"));
 
         // Hachage du mot de passe

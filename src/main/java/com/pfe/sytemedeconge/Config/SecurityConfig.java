@@ -36,8 +36,9 @@ public class SecurityConfig {
         http.cors().and().csrf().disable()
             .authorizeHttpRequests()
             .requestMatchers("/auth/signup", "/auth/login").permitAll()
-            .requestMatchers("/ws/**").permitAll()
-            .requestMatchers("/conges/demande").hasAnyRole("EMPLOYE", "CHEF", "ADMIN")
+            .requestMatchers("/ws/**").permitAll().requestMatchers("/employee/**").permitAll()
+                    .requestMatchers("/conges/demande").hasAnyRole("EMPLOYE", "CHEF", "ADMIN")
+            .requestMatchers("/notifications/**").hasAnyRole("EMPLOYE", "CHEF", "ADMIN") // 🔥 Ajout de cette ligne
             .anyRequest().authenticated()
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -47,6 +48,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {

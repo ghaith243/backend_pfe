@@ -25,10 +25,13 @@ public class Utilisateur {
     private Role role;
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = false)
-    private Service service;
+    private Department service;
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Conge> listeConges;
+    @Lob // Indique qu'on stocke un gros objet
+    @Column(columnDefinition = "LONGBLOB") // Stocker l'image en BLOB
+    private byte[] profilePicture;
 	public Long getId() {
 		return id_utulisateur;
 	}
@@ -65,10 +68,10 @@ public class Utilisateur {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	public Service getService() {
+	public Department getService() {
 		return service;
 	}
-	public void setService(Service service) {
+	public void setService(Department service) {
 		this.service = service;
 	}
 	public List<Conge> getListeConges() {
@@ -77,6 +80,13 @@ public class Utilisateur {
 	public void setListeConges(List<Conge> listeConges) {
 		this.listeConges = listeConges;
 	}
+	public byte[] getProfilePicture() {
+		return profilePicture;
+	}
+	public void setProfilePicture(byte[] profilePicture) {
+		this.profilePicture = profilePicture;
+	}
+	
     
     
 }
