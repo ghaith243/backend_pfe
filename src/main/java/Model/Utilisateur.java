@@ -32,6 +32,7 @@ public class Utilisateur {
     @Lob // Indique qu'on stocke un gros objet
     @Column(columnDefinition = "LONGBLOB") // Stocker l'image en BLOB
     private byte[] profilePicture;
+	public Utilisateur(Long id_utulisateur) {this.id_utulisateur = id_utulisateur;}
 	public Long getId() {
 		return id_utulisateur;
 	}
