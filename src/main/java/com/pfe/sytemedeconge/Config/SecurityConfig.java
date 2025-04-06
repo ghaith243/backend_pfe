@@ -35,7 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/auth/signup", "/auth/login").permitAll()
+            .requestMatchers("/auth/signup", "/auth/login").permitAll().requestMatchers("/charts/**").permitAll().requestMatchers("/api/**").permitAll()
             .requestMatchers("/ws/**").permitAll().requestMatchers("/employee/**").permitAll()
                     .requestMatchers("/conges/demande").hasAnyRole("EMPLOYE", "CHEF", "ADMIN")
             .requestMatchers("/notifications/**").hasAnyRole("EMPLOYE", "CHEF", "ADMIN") // 🔥 Ajout de cette ligne
