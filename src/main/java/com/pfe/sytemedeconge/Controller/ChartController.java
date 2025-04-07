@@ -71,6 +71,17 @@ public class ChartController {
             Map<String, Object> stats = new HashMap<>();
             stats.put("typesCongeService", congeRepository.countByTypeAndServiceId(chef.getService().getId()));
             stats.put("demandesMensuelles", congeRepository.getMonthlyRequestsByService(chef.getService().getId()));
+            // 👉 Ajout du calcul des stats des congés par statut
+            Long serviceId = chef.getService().getId();
+            List<Conge> congesService = congeRepository.findByServiceId(serviceId);
+
+            Map<String, Long> congesStats = new HashMap<>();
+            congesStats.put("Approuvés", congesService.stream().filter(c -> "APPROUVE".equals(c.getStatus())).count());
+            congesStats.put("Rejetés", congesService.stream().filter(c -> "REJETE".equals(c.getStatus())).count());
+            congesStats.put("En attente", congesService.stream().filter(c -> "EN_ATTENTE".equals(c.getStatus())).count());
+
+            stats.put("congesStats", congesStats);
+
             
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
