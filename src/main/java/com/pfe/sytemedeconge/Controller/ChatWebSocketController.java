@@ -25,4 +25,7 @@ public class ChatWebSocketController {
         // Send via WebSocket (for real-time frontend update)
         messagingTemplate.convertAndSend("/topic/messages/" + message.getRecipient(), message);
     }
+
 }
+
+

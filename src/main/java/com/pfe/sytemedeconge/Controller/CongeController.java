@@ -86,7 +86,7 @@ public class CongeController {
         notificationService.notifyChefAndAdmin(notificationMessage, utilisateur);
 
 
-        return ResponseEntity.ok("Demande de congé soumise avec succès !");
+        return ResponseEntity.ok(Map.of("message", "Demande de congé soumise avec succès !"));
      
        
     }
@@ -140,7 +140,7 @@ public class CongeController {
         notificationService.notifyUser(conge.getUtilisateur().getId(), notificationMessage);
 
 
-        return ResponseEntity.ok("Statut mis à jour avec succès !");
+        return ResponseEntity.ok(Map.of("message", "Statut mis à jour avec succès !"));
     }
 
     // Endpoint pour récupérer les demandes de congé d'un utilisateur spécifique
