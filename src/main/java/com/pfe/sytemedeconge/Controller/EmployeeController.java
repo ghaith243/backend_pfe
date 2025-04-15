@@ -1,8 +1,13 @@
 package com.pfe.sytemedeconge.Controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import Model.Department;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -114,7 +119,41 @@ public class EmployeeController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/users/available")
+    public Map<String, String> getAllChefsAndEmployees(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        System.out.println("test1");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            System.out.println("test");
+            String token = authHeader.substring(7);
+            String email = jwtUtil.extractEmail(token);
+            System.out.println(token + " " + email + " " + "te");
 
-    
+            Optional<Utilisateur> employeeOpt = utilisateurRepository.findByEmail(email);
+            System.out.println(employeeOpt);
+            if (employeeOpt.isPresent()) {
+                // Fetch all users (chefs and employees), exclude the currently logged-in user
+                Map<String, String> usersMap = utilisateurRepository.findAll()
+                        .stream()
+                        .filter(u -> !u.getEmail().equals(email)) // exclude self
+                        .collect(Collectors.toMap(Utilisateur::getEmail, Utilisateur::getNom)); // Map email to name
+                System.out.println(usersMap);
+
+                return usersMap;  // Return map of email -> name
+            }
+        }
+
+        return Collections.emptyMap();
+    }
+
+
+
+
+
+
+
+
+
+
 }
     

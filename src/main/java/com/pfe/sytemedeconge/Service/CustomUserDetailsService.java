@@ -1,8 +1,10 @@
 package com.pfe.sytemedeconge.Service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,6 +36,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .roles(utilisateur.getRole().getName())
                 // Ajoute le rôle de l'utilisateur
                 .build();
+
+                /*String authority = "ROLE_" + utilisateur.getRole().getName(); // Ensure this becomes ROLE_EMPLOYE
+        return new User(utilisateur.getEmail(), utilisateur.getMotDePasse(),
+                Collections.singleton(new SimpleGrantedAuthority(authority)));*/
     }
 
     public void uploadProfilePicture(Long userId, MultipartFile file) throws IOException {

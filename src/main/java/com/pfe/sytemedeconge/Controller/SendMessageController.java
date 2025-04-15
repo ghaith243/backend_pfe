@@ -11,16 +11,34 @@ import com.pfe.sytemedeconge.Service.KafkaMessageProducer;
 
 import Model.ChatMessage;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/send")
+@RequestMapping("/api")
 public class SendMessageController {
 
     @Autowired
     private KafkaMessageProducer producer;
 
-    @PostMapping
-    public ResponseEntity<?> sendMessage(@RequestBody ChatMessage message) throws Exception {
+    @PostMapping("/send")
+    public ResponseEntity<Map<String, String>> sendMessage(@RequestBody ChatMessage message) throws Exception {
+        // Check if sender and recipient emails are provided correctly
+        if (message.getSender() == null || message.getRecipient() == null || message.getContent() == null) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Sender, recipient, or content cannot be null.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // Send the message to Kafka
         producer.send(message);
-        return ResponseEntity.ok("Message envoyé");
+
+        // Prepare the response
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "Message envoyé");
+
+        // Return success response
+        return ResponseEntity.ok(response);
     }
 }
+

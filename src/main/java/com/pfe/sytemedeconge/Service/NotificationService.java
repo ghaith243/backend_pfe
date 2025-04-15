@@ -32,7 +32,7 @@ public class NotificationService {
           
           if (service != null) {
               // Trouver le chef du service (supposons qu'il n'y ait qu'un seul chef par service)
-              Utilisateur chef = utilisateurRepository.findByServiceAndRole_Name(service, "CHEF");
+              Utilisateur chef = (Utilisateur) utilisateurRepository.findByServiceAndRole_Name(service, "CHEF");
               
               if (chef != null) {
                   // Envoyer la notification uniquement au chef via WebSocket
