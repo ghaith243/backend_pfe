@@ -32,6 +32,13 @@ public class Utilisateur {
     @Lob // Indique qu'on stocke un gros objet
     @Column(columnDefinition = "LONGBLOB") // Stocker l'image en BLOB
     private byte[] profilePicture;
+    @OneToMany(mappedBy = "employe")
+    @JsonIgnore
+    private List<Absence> absencesEnTantQuEmploye;
+
+    @OneToMany(mappedBy = "chef")
+    @JsonIgnore
+    private List<Absence> absencesValideesEnTantQueChef;
 	public Long getId() {
 		return id_utulisateur;
 	}
@@ -86,6 +93,25 @@ public class Utilisateur {
 	public void setProfilePicture(byte[] profilePicture) {
 		this.profilePicture = profilePicture;
 	}
+	public Long getId_utulisateur() {
+		return id_utulisateur;
+	}
+	public void setId_utulisateur(Long id_utulisateur) {
+		this.id_utulisateur = id_utulisateur;
+	}
+	public List<Absence> getAbsencesEnTantQuEmploye() {
+		return absencesEnTantQuEmploye;
+	}
+	public void setAbsencesEnTantQuEmploye(List<Absence> absencesEnTantQuEmploye) {
+		this.absencesEnTantQuEmploye = absencesEnTantQuEmploye;
+	}
+	public List<Absence> getAbsencesValideesEnTantQueChef() {
+		return absencesValideesEnTantQueChef;
+	}
+	public void setAbsencesValideesEnTantQueChef(List<Absence> absencesValideesEnTantQueChef) {
+		this.absencesValideesEnTantQueChef = absencesValideesEnTantQueChef;
+	}
+	
 	
     
     

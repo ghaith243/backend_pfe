@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import Model.Department;
@@ -25,4 +26,9 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
     long countByServiceId(Long serviceId);
     @Query(value = "SELECT COUNT(*) FROM utilisateur", nativeQuery = true)
     long countTotalUsers();
+
+    @Query("SELECT u FROM Utilisateur u WHERE u.service.id = :serviceId AND u.role.name = 'CHEF'")
+    List<Utilisateur> findChefsByServiceId(@Param("serviceId") Long serviceId);
+
+
 }

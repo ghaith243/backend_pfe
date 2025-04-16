@@ -51,5 +51,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         Utilisateur user = utilisateurRepository.findById(userId).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         return user.getProfilePicture();
     }
+    public Utilisateur findByUsername(String email) {
+        return utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec l'email : " + email));
+    }
+
+    public Utilisateur findById(Long id) {
+        return utilisateurRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
+    }
+    
+
 }
 

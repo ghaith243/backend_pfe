@@ -67,7 +67,7 @@ public class AuthController {
         user.setRole(role);  // Défini par le frontend
         user.setService(service); // Assigner le service récupéré
 
-        user.setEnfantCount(request.getEnfantCount());
+      
       
    
         

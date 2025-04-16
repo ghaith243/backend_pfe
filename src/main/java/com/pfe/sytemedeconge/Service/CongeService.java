@@ -38,20 +38,27 @@ public class CongeService {
         return true;
     }
 
+
     public boolean isCongeMaterniteValide(String type, int enfantCount, LocalDate dateDebut, LocalDate dateFin) {
-        if (!type.equalsIgnoreCase("Maternité")) {
-            return true; // Si ce n'est pas un congé maternité, aucune règle spécifique
+        // Ajout de logs pour débogage
+        System.out.println("Type de congé reçu: " + type);
+        System.out.println("Comparaison avec 'Maternité': " + type.equals("Maternité"));
+        
+        if (type == null || !type.equals("Maternité")) {
+            return true;
         }
 
-        int dureeMax = (enfantCount <= 2) ? 16 : 26; // Durée en semaines
-        long dureeDemandeeEnJours = dateDebut.until(dateFin, ChronoUnit.DAYS);
-        int dureeDemandeeEnSemaines = (int) (dureeDemandeeEnJours / 7); // Durée en semaines entière
-
-        System.out.println("Durée demandée en jours : " + dureeDemandeeEnJours);
-        System.out.println("Durée demandée en semaines : " + dureeDemandeeEnSemaines);
+        int dureeMaxSemaines = (enfantCount <= 2) ? 16 : 26;
+        long dureeDemandeeEnJours = ChronoUnit.DAYS.between(dateDebut, dateFin) + 1;
+        long dureeMaxEnJours = dureeMaxSemaines * 7L;
         
-        return dureeDemandeeEnSemaines <= dureeMax;
+        System.out.println("Validation congé maternité:");
+        System.out.println("Durée demandée: " + dureeDemandeeEnJours + " jours");
+        System.out.println("Durée maximale: " + dureeMaxEnJours + " jours");
+        
+        return dureeDemandeeEnJours <= dureeMaxEnJours;
     }
+
     public List<Conge> getCongesByUtilisateur(Utilisateur utilisateur) {
         return congeRepository.findByUtilisateur(utilisateur);
     }
