@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,25 +29,35 @@ public class NotificationService {
 
     // Envoyer une notification au chef et à l'admin
     public void notifyChefAndAdmin(String message, Utilisateur utilisateur) {
-    	  Department service =  utilisateur.getService();
-          
-          if (service != null) {
-              // Trouver le chef du service (supposons qu'il n'y ait qu'un seul chef par service)
-              Utilisateur chef =  utilisateurRepository.findByServiceAndRole_Name(service, "CHEF");
-              
-              if (chef != null) {
-                  // Envoyer la notification uniquement au chef via WebSocket
-                  messagingTemplate.convertAndSend("/topic/user/" + chef.getId(), message);
 
-                  // Enregistrer la notification en base de données
-                  Notification notification = new Notification();
-                  notification.setMessage(message);
-                  notification.setCreatedAt(LocalDateTime.now());
-                  notification.setUtilisateur(chef); // Associer la notification au chef
-                  notificationRepository.save(notification);
-              }
-          }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        Department service =  utilisateur.getService();
+
+        if (service != null) {
+            // Trouver le chef du service (supposons qu'il n'y ait qu'un seul chef par service)
+            List<Utilisateur> destinataires = utilisateurRepository.findByServiceAndRole_Name(service, "CHEF");
+
+
+            for (Utilisateur destinataire : destinataires) {
+                LocalDateTime now = LocalDateTime.now();
+                String formattedTime = now.format(formatter);
+
+                // Prepare the message content
+                String jsonMessage = String.format("{\"message\": \"%s\", \"time\": \"%s\"}", message, formattedTime);
+
+                // Notify the chef via WebSocket (assuming you are using messagingTemplate for WebSocket)
+                messagingTemplate.convertAndSend("/topic/user/" + destinataire.getId(), jsonMessage);
+
+                // Optionally, save the notification in the database for persistence
+                Notification notification = new Notification();
+                notification.setMessage(message);
+                notification.setCreatedAt(LocalDateTime.now());
+                notification.setUtilisateur(destinataire); // Link notification to the chef
+                notificationRepository.save(notification);
+            }
+        }
     }
+
 
     // Envoyer une notification à l'utilisateur
     public void notifyUser(Long userId, String message) {

@@ -17,11 +17,11 @@ import Model.Utilisateur;
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
     Optional<Utilisateur> findByEmail(String email);
     Optional<Utilisateur> findById(Long id);
-   
-   
-  
-    Utilisateur findByServiceAndRole_Name(Department service, String roleName);
-    
+
+
+
+    List<Utilisateur> findByServiceAndRole_Name(Department service, String roleName);
+
     List<Utilisateur> findByServiceId(Long serviceId);
     long countByServiceId(Long serviceId);
     @Query(value = "SELECT COUNT(*) FROM utilisateur", nativeQuery = true)
@@ -29,6 +29,8 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
 
     @Query("SELECT u FROM Utilisateur u WHERE u.service.id = :serviceId AND u.role.name = 'CHEF'")
     List<Utilisateur> findChefsByServiceId(@Param("serviceId") Long serviceId);
+
+    List<Utilisateur> findAllByRole_Name(String roleName);
 
 
 }

@@ -14,6 +14,7 @@ public class Notification {
 
     private String message;
     private LocalDateTime createdAt;
+    private String recipient;
     private boolean isRead = false;
 
     @ManyToOne
@@ -61,5 +62,8 @@ public class Notification {
 	public void setRead(boolean isRead) {
 		this.isRead = isRead;
 	}
-    
+
+    public String getRecipient() {return recipient;}
+
+    public void setRecipient(String recipient) {this.recipient = recipient;}
 }
