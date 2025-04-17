@@ -1,5 +1,7 @@
 package DTO;
 
+import java.time.LocalDateTime;
+
 public class GroupMessageRequest {
     private String senderEmail;
     private Long groupId;
@@ -29,4 +31,5 @@ public class GroupMessageRequest {
     public void setContent(String content) {
         this.content = content;
     }
+
 }

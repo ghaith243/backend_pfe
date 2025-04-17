@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/group-chats/create").hasAnyRole("CHEF", "ADMIN")
                 .requestMatchers("/users/available").permitAll()
                 .requestMatchers("/employee/**").permitAll()
-                .requestMatchers("/api/group-chats/**").authenticated()
+                .requestMatchers("/api/group-chats/**").permitAll()
                 .requestMatchers("/conges/demande").hasAnyRole("EMPLOYE", "CHEF", "ADMIN")
                 .requestMatchers("/notifications/**").hasAnyRole("EMPLOYE", "CHEF", "ADMIN")
 

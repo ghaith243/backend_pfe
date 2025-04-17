@@ -1,18 +1,20 @@
 package com.pfe.sytemedeconge.Controller;
 
 import DTO.GroupMessageRequest;
+import Model.GroupChat;
+import com.pfe.sytemedeconge.Service.GroupChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import Repository.GroupChatRepository;
+import Repository.ChatMessageRepository;
 
 import com.pfe.sytemedeconge.Service.KafkaMessageProducer;
 
 import Model.ChatMessage;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +23,15 @@ import java.util.Map;
 public class SendMessageController {
 
     @Autowired
+    private ChatMessageRepository chatMessageRepository;
+
+    @Autowired
+    private GroupChatRepository groupChatRepository;
+
+    @Autowired
     private KafkaMessageProducer producer;
+    @Autowired
+    private GroupChatService groupChatService;
 
     @PostMapping("/send")
     public ResponseEntity<Map<String, String>> sendMessage(@RequestBody ChatMessage message) throws Exception {
@@ -45,10 +55,20 @@ public class SendMessageController {
 
     }
     // New POST endpoint for sending group messages
-    @PostMapping("/send-group")
-    public ResponseEntity<ChatMessage> sendGroupMessage(@RequestBody GroupMessageRequest request) {
-        // Use the ChatService to handle the group message sending logic
-        ChatMessage savedMessage = chatService.sendGroupMessage(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedMessage);
+    @PostMapping("/group-chats/{groupId}/send")
+    public ChatMessage sendGroupMessage(
+            @PathVariable Long groupId,
+            @RequestBody GroupMessageRequest request) {
+        GroupChat groupChat = groupChatRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        ChatMessage message = new ChatMessage();
+        message.setSender(request.getSenderEmail());
+        message.setContent(request.getContent());
+        message.setGroupChat(groupChat);
+
+        return chatMessageRepository.save(message);
     }
+
+
 }
