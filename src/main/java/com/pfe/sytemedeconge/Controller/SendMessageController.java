@@ -1,6 +1,8 @@
 package com.pfe.sytemedeconge.Controller;
 
+import DTO.GroupMessageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,5 +41,14 @@ public class SendMessageController {
 
         // Return success response
         return ResponseEntity.ok(response);
+
+
+    }
+    // New POST endpoint for sending group messages
+    @PostMapping("/send-group")
+    public ResponseEntity<ChatMessage> sendGroupMessage(@RequestBody GroupMessageRequest request) {
+        // Use the ChatService to handle the group message sending logic
+        ChatMessage savedMessage = chatService.sendGroupMessage(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedMessage);
     }
 }

@@ -1,5 +1,6 @@
 package Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,4 +34,7 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
     List<Utilisateur> findAllByRole_Name(String roleName);
 
 
+    Collection<Utilisateur> findByIdIn(List<Long> ids);
+
+    List<Utilisateur> findByEmailIn(List<String> emails);
 }
