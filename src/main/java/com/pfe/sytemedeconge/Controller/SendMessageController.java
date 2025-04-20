@@ -54,21 +54,6 @@ public class SendMessageController {
 
 
     }
-    // New POST endpoint for sending group messages
-    @PostMapping("/group-chats/{groupId}/send")
-    public ChatMessage sendGroupMessage(
-            @PathVariable Long groupId,
-            @RequestBody GroupMessageRequest request) {
-        GroupChat groupChat = groupChatRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("Group not found"));
-
-        ChatMessage message = new ChatMessage();
-        message.setSender(request.getSenderEmail());
-        message.setContent(request.getContent());
-        message.setGroupChat(groupChat);
-
-        return chatMessageRepository.save(message);
-    }
 
 
 }

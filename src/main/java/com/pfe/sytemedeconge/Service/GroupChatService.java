@@ -1,20 +1,19 @@
 package com.pfe.sytemedeconge.Service;
 
-import DTO.GroupChatRequest;
-import DTO.GroupMessageRequest;
-import DTO.TypingGroupNotification;
-import DTO.TypingNotification;
+import DTO.*;
 import Model.ChatMessage;
 import Model.GroupChat;
 import Model.Utilisateur;
 import Repository.UtilisateurRepository;
 import Repository.GroupChatRepository;
 import Repository.ChatMessageRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +33,11 @@ public class GroupChatService {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private KafkaMessageProducer kafkaMessageProducer;
+
+
 
     public GroupChat createGroupChat(GroupChatRequest request) {
         List<Utilisateur> users = userRepository.findByEmailIn(request.getInitialParticipants());
@@ -66,22 +70,36 @@ public class GroupChatService {
     }
 
     // Add sendGroupMessage method
-    public ChatMessage sendGroupMessage(Long groupId,GroupMessageRequest request) {
+    @Transactional
+    public ChatMessage sendGroupMessage(Long groupId, GroupMessageRequest request) {
         // Find the group chat by ID
-        Optional<GroupChat> groupChatOpt = groupChatRepository.findById(request.getGroupId());
+        Optional<GroupChat> groupChatOpt = groupChatRepository.findById(groupId);
         if (!groupChatOpt.isPresent()) {
             throw new RuntimeException("Group chat not found");
         }
         GroupChat groupChat = groupChatOpt.get();
 
+        // Retrieve the sender's ID from the email
+        Optional<Utilisateur> senderOpt = userRepository.findByEmail(request.getSenderEmail());
+        if (!senderOpt.isPresent()) {
+            throw new RuntimeException("Sender not found");
+        }
+        Long senderId = senderOpt.get().getId(); // Get the sender's ID
+
         // Create and save the new message
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setContent(request.getContent());
-        chatMessage.setSender(request.getSenderEmail()); // Set the sender's email
+        chatMessage.setSender(request.getSenderEmail());
+        chatMessage.setTimestamp(LocalDateTime.now());
         chatMessage.setGroupChat(groupChat); // Associate the message with the group chat
 
         // Save the message to the database
-        return chatMessageRepository.save(chatMessage);
+        ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
+
+        // Now, send the group message to Kafka
+        kafkaMessageProducer.sendGroupMessageToKafka(request.getContent(), senderId, groupId);
+
+        return savedMessage;
     }
 
     // Notify group members when someone is typing in the group
@@ -90,9 +108,8 @@ public class GroupChatService {
         List<String> participantEmails = getGroupParticipantsEmails(groupId);
 
         // Notify all participants in the group
-        for (String email : participantEmails) {
-            messagingTemplate.convertAndSend("/topic/group/" + groupId + "/typing", new TypingGroupNotification(username));
-        }
+        ////messagingTemplate.convertAndSend("/topic/group/" + groupId + "/typing", new TypingGroupNotification(username));
+        //}
     }
 
     // Method to get the emails of all participants in a group (you should implement this logic)
@@ -102,10 +119,34 @@ public class GroupChatService {
         return groupChatRepository.findParticipantsByGroupId(groupId);
     }
 
-    public List<GroupChat> getGroupChatsByUserEmail(String userEmail) {
-        // This assumes you have a way to find group chats by the participants' emails
-        return groupChatRepository.findByParticipantsEmail(userEmail);
+    public List<GroupChatDTO> getGroupChatsByUserEmail(String userEmail) {
+        // Fetch the group chats by user email
+        List<GroupChat> groupChats = groupChatRepository.findByParticipantsEmail(userEmail);
+
+        // Map the GroupChat entities to GroupChatDTOs
+        return groupChats.stream().map(groupChat -> {
+            // Create and populate the GroupChatDTO
+            GroupChatDTO dto = new GroupChatDTO();
+            dto.setId(groupChat.getId());
+            dto.setGroupName(groupChat.getGroupName());
+
+            // Map participants to a list of their emails (not full objects)
+            List<String> participantEmails = groupChat.getParticipants().stream()
+                    .map(Utilisateur::getEmail)
+                    .collect(Collectors.toList());
+            dto.setParticipants(participantEmails);
+
+            // Map messages to DTOs (if needed)
+            List<ChatMessageDTO> messageDTOs = groupChat.getMessages().stream()
+                    .map(message -> new ChatMessageDTO(message.getId(), message.getSender(), message.getContent(), message.getTimestamp(),message.getGroupChat().getId()))
+                    .collect(Collectors.toList());
+            dto.setMessages(messageDTOs);
+
+            return dto;
+        }).collect(Collectors.toList());
     }
+
+
 
     public List<ChatMessage> getMessagesForGroup(Long groupChatId) {
         return chatMessageRepository.findByGroupChatId(groupChatId);
