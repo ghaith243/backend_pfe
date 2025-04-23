@@ -62,16 +62,16 @@ public class KafkaMessageConsumer {
         try {
             logger.info("📥 Received message from Kafka: {}", message);
             JsonNode node = objectMapper.readTree(message);
-            String messageId = node.get("messageId").asText();
+            //String messageId = node.get("messageId").asText();
 
             // Check if the message has already been processed
-            if (hasMessageBeenProcessed(messageId)) {
+            /*if (hasMessageBeenProcessed(messageId)) {
                 logger.info("⚠️ Message with ID {} has already been processed. Skipping.", messageId);
                 return;  // Skip processing this message to avoid duplication
             }
 
             // Mark this message as processed
-            processedMessageIds.add(messageId);
+            processedMessageIds.add(messageId);*/
 
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setContent(node.get("content").asText());
