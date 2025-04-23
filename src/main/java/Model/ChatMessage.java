@@ -16,6 +16,9 @@ public class ChatMessage {
     private String recipient;
     private String content;
     private LocalDateTime timestamp;
+	@ManyToOne
+	@JoinColumn(name = "group_chat_id") // Foreign key reference to GroupChat
+	private GroupChat groupChat;
 	public Long getId() {
 		return id;
 	}
@@ -46,5 +49,12 @@ public class ChatMessage {
 	public void setTimestamp(LocalDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
-    
+
+    public GroupChat getGroupChat() {
+        return groupChat;
+    }
+
+    public void setGroupChat(GroupChat groupChat) {
+        this.groupChat = groupChat;
+    }
 }

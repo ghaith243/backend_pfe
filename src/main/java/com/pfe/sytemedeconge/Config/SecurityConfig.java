@@ -39,8 +39,10 @@ public class SecurityConfig {
                 .requestMatchers("/charts/**").permitAll()
                 .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()
+                .requestMatchers("/api/group-chats/create").hasAnyRole("CHEF", "ADMIN")
                 .requestMatchers("/users/available").permitAll()
                 .requestMatchers("/employee/**").permitAll()
+                .requestMatchers("/api/group-chats/**").permitAll()
                 .requestMatchers("/conges/demande").hasAnyRole("EMPLOYE", "CHEF", "ADMIN")
                 .requestMatchers("/notifications/**").hasAnyRole("EMPLOYE", "CHEF", "ADMIN")
 
