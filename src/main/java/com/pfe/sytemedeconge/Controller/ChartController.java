@@ -149,16 +149,20 @@ public class ChartController {
     private String mapTypeToFrontend(String type) {
         switch (type.toUpperCase()) {
             case "PAYE":
+            return  "Paye";
             case "ANNUEL":
             case "ANNUELLE":
                 return "Annuelle";
             case "RTT":
                 return "RTT";
             case "MALADIE":
-            case "SICK":
+            
                 return "Maladie";
             case "SANS_SOLDE":  // Assurez-vous d'utiliser "SANS_SOLDE" dans le backend comme c'est le nom du type
                 return "Sans Solde";
+            case "MATERNITE":
+            	return "Maternité";
+            	
             default:
                 return "Autre";
         }

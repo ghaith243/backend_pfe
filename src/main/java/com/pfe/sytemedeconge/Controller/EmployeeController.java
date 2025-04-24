@@ -7,13 +7,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import Model.Department;
+import Model.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,8 +31,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.pfe.sytemedeconge.Service.CustomUserDetailsService;
 import com.pfe.sytemedeconge.Service.JwtUtil;
 
+import DTO.AuthRequest;
 import DTO.UtilisateurDTO;
 import Model.Utilisateur;
+import Repository.RoleRepository;
+import Repository.ServiceRepository;
 import Repository.UtilisateurRepository;
 
 @RestController
@@ -39,10 +45,14 @@ public class EmployeeController {
 
     @Autowired
     private UtilisateurRepository utilisateurRepository;
-
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private ServiceRepository serviceRepository;
     @Autowired
     private JwtUtil jwtUtil;
     private final CustomUserDetailsService userService;
+    
 
     public EmployeeController( CustomUserDetailsService userService) {
         this.userService = userService;
@@ -90,24 +100,85 @@ public class EmployeeController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
+    // Endpoint pour l'inscription
+    @PostMapping("/ajouteruser")
+    public ResponseEntity<?> signup(@RequestBody AuthRequest request) {
+        // Vérification si l'email existe déjà
+        if (utilisateurRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email déjà utilisé");
+        }
+
+        // Récupérer le rôle
+        Role role = roleRepository.findByName(request.getRole())
+                .orElseThrow(() -> new RuntimeException("Rôle non trouvé"));
+
+        // Récupérer un service à assigner à l'utilisateur (ici, on suppose que le service est envoyé avec la requête)
+        Department service = serviceRepository.findById(request.getServiceId())  // Supposons que le service soit envoyé avec la requête
+                .orElseThrow(() -> new RuntimeException("Service non trouvé"));
+
+        // Hachage du mot de passe
+        String hashedPassword = BCrypt.hashpw(request.getMotDePasse(), BCrypt.gensalt());
+
+        // Création de l'utilisateur et assignation des valeurs
+        Utilisateur user = new Utilisateur();
+        user.setNom(request.getNom());
+        user.setEmail(request.getEmail());
+        user.setMotDePasse(hashedPassword);
+        user.setRole(role);  // Défini par le frontend
+        user.setService(service); // Assigner le service récupéré
+        user.setEnfantCount(request.getEnfantCount())    ;  
+      
+   
+        
+        // Sauvegarde de l'utilisateur dans la base de données
+        utilisateurRepository.save(user);
+
+        return ResponseEntity.ok("Inscription réussie !");
+    }
+
     @PutMapping("/{userId}/updateemployee")
-    public ResponseEntity<Utilisateur> updateEmployee(@PathVariable long userId, 
-                                                      @RequestBody Utilisateur updatedUser) {
+    public ResponseEntity<Utilisateur> updateEmployee(@PathVariable long userId, @RequestBody AuthRequest request) {
         Utilisateur user = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
-        // Mettre à jour les champs modifiables
-        user.setEmail(updatedUser.getEmail());
-        user.setNom(updatedUser.getNom());
-      
-        
-       
-        
+        // Récupérer le rôle
+        Role role = roleRepository.findByName(request.getRole())
+                .orElseThrow(() -> new RuntimeException("Rôle non trouvé"));
+
+        // Récupérer le service
+        Department service = serviceRepository.findById(request.getServiceId())
+                .orElseThrow(() -> new RuntimeException("Service non trouvé"));
+
+        // Hachage du mot de passe (seulement si fourni)
+        if (request.getMotDePasse() != null && !request.getMotDePasse().isEmpty()) {
+            String hashedPassword = BCrypt.hashpw(request.getMotDePasse(), BCrypt.gensalt());
+            user.setMotDePasse(hashedPassword);
+        }
+
+        // Mettre à jour les champs
+        user.setNom(request.getNom());
+        user.setEmail(request.getEmail());
+        user.setRole(role);
+        user.setService(service);
+        user.setEnfantCount(request.getEnfantCount())    ;  
+
         // Sauvegarder les modifications
         Utilisateur savedUser = utilisateurRepository.save(user);
-        
         return ResponseEntity.ok(savedUser);
     }
+    
+    @DeleteMapping("/deleteuser/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        Optional<Utilisateur> userOptional = utilisateurRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur introuvable");
+        }
+
+        utilisateurRepository.deleteById(userId);
+        return ResponseEntity.ok("Utilisateur supprimé avec succès");
+    }
+
     @GetMapping("/users")
     public ResponseEntity<List<Utilisateur>> getAllEmployees() {
         List<Utilisateur> users = utilisateurRepository.findAll();
@@ -157,4 +228,3 @@ public class EmployeeController {
 
 
 }
-    

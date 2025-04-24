@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -20,6 +21,9 @@ public class Utilisateur {
     private String email;
     private String motDePasse;
     private int enfantCount;
+    private String resetCode;
+    private LocalDateTime resetCodeExpiration;
+
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
@@ -68,6 +72,19 @@ public class Utilisateur {
 	}
 	public void setEnfantCount(int enfantCount) {
 		this.enfantCount = enfantCount;
+	}
+	
+	public String getResetCode() {
+		return resetCode;
+	}
+	public void setResetCode(String resetCode) {
+		this.resetCode = resetCode;
+	}
+	public LocalDateTime getResetCodeExpiration() {
+		return resetCodeExpiration;
+	}
+	public void setResetCodeExpiration(LocalDateTime resetCodeExpiration) {
+		this.resetCodeExpiration = resetCodeExpiration;
 	}
 	public Role getRole() {
 		return role;
