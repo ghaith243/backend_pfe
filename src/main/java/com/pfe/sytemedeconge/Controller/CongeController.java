@@ -75,11 +75,12 @@ public class CongeController {
         if (!congeService.isCongeMaterniteValide(conge.getType(), utilisateur.getEnfantCount(), conge.getDateDebut(), conge.getDateFin())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("La durée du congé maternité dépasse la limite autorisée.");
         }
-
+         
         // Lier l'utilisateur et le service à la demande de congé
         conge.setUtilisateur(utilisateur);
         conge.setService(utilisateur.getService());
-
+        conge.setStatus("EN_ATTENTE");
+       
         // Enregistrer la demande de congé
         congeRepository.save(conge);
         String notificationMessage = "Nouvelle demande de congé de " + utilisateur.getNom() + " (" + utilisateur.getEmail() + ")";
