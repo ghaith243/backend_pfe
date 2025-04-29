@@ -97,7 +97,7 @@ public class GroupChatService {
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
 
         // Now, send the group message to Kafka
-        kafkaMessageProducer.sendGroupMessageToKafka(request.getContent(), senderId, groupId);
+        //kafkaMessageProducer.sendGroupMessageToKafka(request.getContent(), senderId, groupId);
 
         return savedMessage;
     }
@@ -144,6 +144,12 @@ public class GroupChatService {
 
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public Long getUserIdByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(Utilisateur::getId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
 

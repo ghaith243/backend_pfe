@@ -7,6 +7,7 @@ import DTO.GroupMessageRequest;
 import Model.ChatMessage;
 import Model.GroupChat;
 import com.pfe.sytemedeconge.Service.GroupChatService;
+import com.pfe.sytemedeconge.Service.KafkaMessageProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,9 @@ public class GroupChatController {
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
+
+    @Autowired
+    private KafkaMessageProducer kafkaProducerService;
 
     @PostMapping("/create")
     public ResponseEntity<GroupChat> createGroupChat(@RequestBody GroupChatRequest groupChatRequest) {
@@ -85,6 +89,8 @@ public class GroupChatController {
                                                            @RequestBody GroupMessageRequest request) {
         ChatMessage sentMessage = groupChatService.sendGroupMessage(groupId, request);
 
+        String senderEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long senderId = groupChatService.getUserIdByEmail(senderEmail);
         ChatMessageDTO responseDto = new ChatMessageDTO(
                 sentMessage.getId(),
                 sentMessage.getSender(),
@@ -92,7 +98,7 @@ public class GroupChatController {
                 sentMessage.getTimestamp(),
                 sentMessage.getGroupChat().getId()
         );
-        messagingTemplate.convertAndSend("/topic/group/" + groupId, responseDto);
+        kafkaProducerService.sendGroupMessageToKafka(request.getContent(), senderId, groupId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 }
