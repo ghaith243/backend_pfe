@@ -102,7 +102,7 @@ public class EmployeeController {
     }
     // Endpoint pour l'inscription
     @PostMapping("/ajouteruser")
-    public ResponseEntity<?> signup(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> ajouterUtilisateur(@RequestBody AuthRequest request) {
         // Vérification si l'email existe déjà
         if (utilisateurRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email déjà utilisé");
@@ -137,7 +137,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{userId}/updateemployee")
-    public ResponseEntity<Utilisateur> updateEmployee(@PathVariable long userId, @RequestBody AuthRequest request) {
+    public ResponseEntity<Utilisateur> modifierUtilisateur(@PathVariable long userId, @RequestBody AuthRequest request) {
         Utilisateur user = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
@@ -168,7 +168,7 @@ public class EmployeeController {
     }
     
     @DeleteMapping("/deleteuser/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<?> supprimerUtilisateur(@PathVariable Long userId) {
         Optional<Utilisateur> userOptional = utilisateurRepository.findById(userId);
 
         if (userOptional.isEmpty()) {

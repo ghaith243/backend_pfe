@@ -64,9 +64,13 @@ public class NotificationService {
         Utilisateur utilisateur = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-        // Créer un objet JSON pour la notification
-        String jsonMessage = String.format("{\"message\": \"%s\"}", message);
-        System.out.println("🔔 Notification JSON envoyée : " + jsonMessage);
+        // Créer un objet JSON complet pour la notification
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedTime = now.format(formatter);
+        
+        String jsonMessage = String.format("{\"message\": \"%s\", \"createdAt\": \"%s\", \"read\": false}", 
+                                         message, formattedTime);
 
         // Envoyer via WebSocket
         messagingTemplate.convertAndSend("/topic/user/" + userId, jsonMessage);
@@ -74,8 +78,9 @@ public class NotificationService {
         // Enregistrer en base de données
         Notification notification = new Notification();
         notification.setMessage(message);
-        notification.setCreatedAt(LocalDateTime.now());
+        notification.setCreatedAt(now);
         notification.setUtilisateur(utilisateur);
+        notification.setRead(false);
         notificationRepository.save(notification);
     }
     public List<Notification> getAllNotifications(Long utilisateurId) {

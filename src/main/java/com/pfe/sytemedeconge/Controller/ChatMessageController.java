@@ -17,6 +17,7 @@ public class ChatMessageController {
 
     @Autowired
     private ChatMessageRepository repository;
+    
 
     @GetMapping("/{user1}/{user2}")
     public List<ChatMessage> getMessagesBetweenUsers(@PathVariable String user1, @PathVariable String user2) {

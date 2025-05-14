@@ -13,13 +13,6 @@ import Model.ChatMessage;
 @Table(name = "group_chat")
 public class GroupChat {
 
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +28,14 @@ public class GroupChat {
     public Long getId() {return id;}
 
     public void setId(Long id) {this.id = id;}
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
 
     public Set<Utilisateur> getParticipants() {
         return participants;

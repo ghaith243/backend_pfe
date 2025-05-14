@@ -1,4 +1,6 @@
 package com.pfe.sytemedeconge.Controller;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import java.util.Map;
@@ -166,5 +168,16 @@ public class CongeController {
         List<Conge> conges = congeRepository.findAll();
         return ResponseEntity.ok(conges);
     }
-    
+    @GetMapping("/test-notification/{userId}")
+    public ResponseEntity<?> testNotification(@PathVariable Long userId) {
+        try {
+            notificationService.notifyUser(userId, "Notification de test depuis le backend à " + 
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            return ResponseEntity.ok("Notification de test envoyée avec succès");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Erreur lors de l'envoi de la notification: " + e.getMessage());
+        }
+    }
 }
