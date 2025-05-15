@@ -30,7 +30,7 @@ public class NotificationService {
     // Envoyer une notification au chef et à l'admin
     public void notifyChefAndAdmin(String message, Utilisateur utilisateur) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         Department service =  utilisateur.getService();
 
         if (service != null) {
@@ -43,7 +43,7 @@ public class NotificationService {
                 String formattedTime = now.format(formatter);
 
                 // Prepare the message content
-                String jsonMessage = String.format("{\"message\": \"%s\", \"time\": \"%s\"}", message, formattedTime);
+                String jsonMessage = String.format("{\"message\": \"%s\", \"createdAt\": \"%s\", \"read\": false}", message, formattedTime);
 
                 // Notify the chef via WebSocket (assuming you are using messagingTemplate for WebSocket)
                 messagingTemplate.convertAndSend("/topic/user/" + destinataire.getId(), jsonMessage);
@@ -66,7 +66,7 @@ public class NotificationService {
 
         // Créer un objet JSON complet pour la notification
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         String formattedTime = now.format(formatter);
         
         String jsonMessage = String.format("{\"message\": \"%s\", \"createdAt\": \"%s\", \"read\": false}", 
