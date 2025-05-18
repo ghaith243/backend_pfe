@@ -27,6 +27,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+
 @Service
 public class KafkaMessageConsumer {
 
@@ -46,6 +49,9 @@ public class KafkaMessageConsumer {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     private final ObjectMapper objectMapper;
     private Set<String> processedMessageIds = new HashSet<>();
@@ -115,6 +121,14 @@ public class KafkaMessageConsumer {
                     logger.info("💾 Private message saved to DB for user '{}'", recipient.get().getEmail());
 
                     createNotificationForRecipient(chatMessage);
+
+                    // Send email to recipient
+                    System.out.println("🔔 Received message from Kafka:");
+                    System.out.println("📤 Sender: " + chatMessage.getSender());
+                    System.out.println("📥 Recipient: " + chatMessage.getRecipient());
+                    System.out.println("📝 Content: " + chatMessage.getContent());
+                    emailService.sendEmail(chatMessage);
+
                 } else {
                     logger.warn("⚠️ Sender or recipient not found for private message.");
                 }
@@ -151,4 +165,5 @@ public class KafkaMessageConsumer {
 
         logger.info("📨 Notification sent to user {}: {}", chatMessage.getRecipient(), chatMessage.getContent());
     }
+
 }

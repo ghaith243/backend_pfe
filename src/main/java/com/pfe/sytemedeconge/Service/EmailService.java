@@ -1,5 +1,8 @@
 package com.pfe.sytemedeconge.Service;
 
+import Model.ChatMessage;
+import Model.Utilisateur;
+import Repository.UtilisateurRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -10,11 +13,16 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
     
     /**
      * Envoie un email avec une pièce jointe.
@@ -48,6 +56,37 @@ public class EmailService {
                 message.setText("Voici votre code de réinitialisation : " + resetCode);
                 mailSender.send(message);
             }
+
+    public void sendEmail(ChatMessage chatMessage) {
+        Optional<Utilisateur> senderUserOpt = utilisateurRepository.findByEmail(chatMessage.getSender());
+        String senderName = senderUserOpt.map(Utilisateur::getNom).orElse("Unknown");
+
+        String to = chatMessage.getRecipient();
+        String subject = "Nouveau message de " + senderName;
+        String body = "Bonjour,\n\nVous avez reçu un nouveau message de " + senderName + ":\n\n" +
+                chatMessage.getContent() + "\n\n" +
+                "Cordialement,\nL'équipe de gestion de congés.";
+
+        System.out.println("📨 Preparing to send email...");
+        System.out.println("➡️  From: ghaith.hammi@esen.tn");
+        System.out.println("➡️  To: " + to);
+        System.out.println("➡️  Subject: " + subject);
+        System.out.println("➡️  Body:\n" + body);
+
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("ghaith.hammi@esen.tn");
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
+
+            mailSender.send(message);
+            System.out.println("✅ Email sent successfully to " + to);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send email to " + to);
+            e.printStackTrace();
+        }
+    }
         
     }
     
