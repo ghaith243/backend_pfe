@@ -150,16 +150,15 @@ public class ChartController {
         switch (type) {
             case "PAYE":
                 return "Congés payés"; // Retourner "Congés payés" pour correspondre au frontend
-            case "ANNUEL":
-            case "ANNUELLE":
-                return "Annuelle";
-            case "RTT":
-                return "RTT";
+            
+            
+                
+            
             case "MALADIE":
                 return "Maladie";
             case "SANS_SOLDE":
                 return "Sans Solde";
-            case "Maternité": // Utiliser la version en majuscules pour correspondre à type.toUpperCase()
+            case "Maternité": 
                 return "Maternité";
             default:
                 return "Autre";
