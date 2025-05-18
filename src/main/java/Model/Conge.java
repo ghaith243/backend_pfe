@@ -12,9 +12,11 @@ public class Conge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_conge;
-
-    private String type; // Annuelle, Maladie, Modernity, Exceptionnel, etc.
+    @Column(nullable = false)
+    private String type;
+    @Column(nullable = false)// Annuelle, Maladie, Modernity, Exceptionnel, etc.
     private LocalDate dateDebut;
+    @Column(nullable = false)
     private LocalDate dateFin;
     private String status; 
     private String motif;

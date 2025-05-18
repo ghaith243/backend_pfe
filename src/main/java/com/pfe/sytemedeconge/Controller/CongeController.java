@@ -140,7 +140,7 @@ public class CongeController {
         conge.setStatus(status);
         congeRepository.save(conge);
         String notificationMessage = "Votre demande de congé a été " + status.toLowerCase() + ".";
-        notificationService.notifyUser(conge.getUtilisateur().getId(), notificationMessage);
+        notificationService.notifyUser(conge.getUtilisateur(), notificationMessage);
 
 
         return ResponseEntity.ok("Statut mis à jour avec succès !");
