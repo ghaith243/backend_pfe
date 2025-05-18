@@ -13,7 +13,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class EmailService {
@@ -23,6 +27,9 @@ public class EmailService {
 
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+
+    private Map<String, Instant> lastEmailSentMap = new ConcurrentHashMap<>();
+    private static final Duration EMAIL_COOLDOWN = Duration.ofMinutes(15);
     
     /**
      * Envoie un email avec une pièce jointe.
@@ -57,15 +64,36 @@ public class EmailService {
                 mailSender.send(message);
             }
 
+
+
     public void sendEmail(ChatMessage chatMessage) {
+        System.out.println("📬 sendEmail() called with message from: " + chatMessage.getSender());
+
         Optional<Utilisateur> senderUserOpt = utilisateurRepository.findByEmail(chatMessage.getSender());
-        String senderName = senderUserOpt.map(Utilisateur::getNom).orElse("Unknown");
+        String senderName = senderUserOpt.map(Utilisateur::getNom).orElse("Utilisateur inconnu");
 
         String to = chatMessage.getRecipient();
-        String subject = "Nouveau message de " + senderName;
-        String body = "Bonjour,\n\nVous avez reçu un nouveau message de " + senderName + ":\n\n" +
-                chatMessage.getContent() + "\n\n" +
-                "Cordialement,\nL'équipe de gestion de congés.";
+        Instant now = Instant.now();
+        Instant lastSent = lastEmailSentMap.get(to);
+        if (lastSent != null && Duration.between(lastSent, now).compareTo(EMAIL_COOLDOWN) < 0) {
+            System.out.println("Skipping email to " + to + " to avoid spamming.");
+            System.out.flush();
+            return;
+        }
+
+        String subject = "Nouveau message reçu de " + senderName;
+
+        String body = new StringBuilder()
+                .append("Bonjour,\n\n")
+                .append("Vous avez reçu un nouveau message de ").append(senderName).append(".\n\n")
+                .append("Contenu du message:\n")
+                .append("----------------------------\n")
+                .append(chatMessage.getContent()).append("\n")
+                .append("----------------------------\n\n")
+                .append("Veuillez vous connecter à la plateforme ArabSoft pour répondre ou consulter vos messages.\n\n")
+                .append("Cordialement,\n")
+                .append("L'équipe ArabSoft")
+                .toString();
 
         System.out.println("📨 Preparing to send email...");
         System.out.println("➡️  From: ghaith.hammi@esen.tn");
@@ -82,6 +110,7 @@ public class EmailService {
 
             mailSender.send(message);
             System.out.println("✅ Email sent successfully to " + to);
+            lastEmailSentMap.put(to, now);
         } catch (Exception e) {
             System.err.println("❌ Failed to send email to " + to);
             e.printStackTrace();

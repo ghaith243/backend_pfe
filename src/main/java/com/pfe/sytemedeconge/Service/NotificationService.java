@@ -67,10 +67,10 @@ public class NotificationService {
         String jsonMessage = String.format("{\"message\": \"%s\", \"createdAt\": \"%s\", \"read\": false}", 
                                            message, formattedTime);
 
-        // ✅ Envoi WebSocket direct à l'utilisateur cible
+        //  Envoi WebSocket direct à l'utilisateur cible
         messagingTemplate.convertAndSend("/topic/user/" + destinataire.getId(), jsonMessage);
 
-        // ✅ Enregistrement en base
+        //  Enregistrement en base
         Notification notification = new Notification();
         notification.setMessage(message);
         notification.setCreatedAt(now);

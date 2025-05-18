@@ -120,7 +120,7 @@ public class KafkaMessageConsumer {
                     repository.save(chatMessage);
                     logger.info("💾 Private message saved to DB for user '{}'", recipient.get().getEmail());
 
-                    createNotificationForRecipient(chatMessage);
+
 
                     // Send email to recipient
                     System.out.println("🔔 Received message from Kafka:");
