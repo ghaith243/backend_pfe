@@ -28,7 +28,7 @@ public class NotificationService {
     private UtilisateurRepository utilisateurRepository; 
 
     // Envoyer une notification au chef et à l'admin
-    public void notifyChefAndAdmin(String message, Utilisateur utilisateur) {
+    public void notifyChef(String message, Utilisateur utilisateur) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         Department service =  utilisateur.getService();
@@ -57,7 +57,35 @@ public class NotificationService {
             }
         }
     }
+    public void notifyAdmin(String message, Utilisateur utilisateur) {
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        Department service =  utilisateur.getService();
+
+        if (service != null) {
+            // Trouver le chef du service (supposons qu'il n'y ait qu'un seul chef par service)
+            List<Utilisateur> destinataires = utilisateurRepository.findByServiceAndRole_Name(service, "ADMIN");
+
+
+            for (Utilisateur destinataire : destinataires) {
+                LocalDateTime now = LocalDateTime.now();
+                String formattedTime = now.format(formatter);
+
+                // Prepare the message content
+                String jsonMessage = String.format("{\"message\": \"%s\", \"createdAt\": \"%s\", \"read\": false}", message, formattedTime);
+
+                // Notify the chef via WebSocket (assuming you are using messagingTemplate for WebSocket)
+                messagingTemplate.convertAndSend("/topic/user/" + destinataire.getId(), jsonMessage);
+
+                // Optionally, save the notification in the database for persistence
+                Notification notification = new Notification();
+                notification.setMessage(message);
+                notification.setCreatedAt(LocalDateTime.now());
+                notification.setUtilisateur(destinataire); // Link notification to the chef
+                notificationRepository.save(notification);
+            }
+        }
+    }
 
     public void notifyUser(Utilisateur destinataire, String message) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); 

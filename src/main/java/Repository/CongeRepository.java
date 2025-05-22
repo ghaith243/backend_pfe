@@ -62,7 +62,11 @@ public interface CongeRepository extends JpaRepository<Conge,Long>{
 	  @Query("SELECT c FROM Conge c WHERE c.utilisateur.id = :userId AND c.status = :status")
 	  List<Conge> findByUtilisateurIdAndStatus(@Param("userId") Long userId, @Param("status") String status);
 
-	  
+	// Pour Admin - Statistiques globales des statuts
+	  @Query("SELECT 'APPROUVE' as status, COUNT(c) as count FROM Conge c WHERE c.status = 'APPROUVE' " +
+	         "UNION SELECT 'REJETE' as status, COUNT(c) as count FROM Conge c WHERE c.status = 'REJETE' " +
+	         "UNION SELECT 'EN_ATTENTE' as status, COUNT(c) as count FROM Conge c WHERE c.status = 'EN_ATTENTE'")
+	  List<Map<String, Object>> getGlobalStatusStats();
 	  
 	 
 	}

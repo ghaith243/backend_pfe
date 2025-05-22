@@ -45,16 +45,34 @@ public class ChartController {
 
     // Statistiques pour l'admin (globales)
     @GetMapping("/admin")
-    public Map<String, Object> getAdminStats() {
-        Map<String, Object> stats = new HashMap<>();
+    public ResponseEntity<?> getAdminStats() {
+        Map<String, Object> response = new HashMap<>();
         
-        // Répartition des types de congé
-        stats.put("typesConge", congeRepository.countByTypeGroupBy());
+        // Données existantes
+        response.put("typesConge", congeRepository.countByTypeGroupBy());
+        response.put("occupationParService", congeRepository.getOccupationRateByService());
         
-        // Taux d'occupation par service
-        stats.put("occupationParService", congeRepository.getOccupationRateByService());
+        // Nouvelles données pour les cartes statistiques
+        List<Map<String, Object>> statusStats = congeRepository.getGlobalStatusStats();
+        Map<String, Integer> congesStats = new HashMap<>();
         
-        return stats;
+        for (Map<String, Object> stat : statusStats) {
+            String status = (String) stat.get("status");
+            Long count = (Long) stat.get("count");
+            
+            // Convertir les statuts pour correspondre au format attendu par le frontend
+            if ("APPROUVE".equals(status)) {
+                congesStats.put("Approuvés", count.intValue());
+            } else if ("REJETE".equals(status)) {
+                congesStats.put("Rejetés", count.intValue());
+            } else if ("EN_ATTENTE".equals(status)) {
+                congesStats.put("En attente", count.intValue());
+            }
+        }
+        
+        response.put("congesStats", congesStats);
+        
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/chef")

@@ -86,7 +86,8 @@ public class CongeController {
         // Enregistrer la demande de congé
         congeRepository.save(conge);
         String notificationMessage = "Nouvelle demande de congé de " + utilisateur.getNom() + " (" + utilisateur.getEmail() + ")";
-        notificationService.notifyChefAndAdmin(notificationMessage, utilisateur);
+        notificationService.notifyChef(notificationMessage, utilisateur);
+        notificationService.notifyAdmin(notificationMessage, utilisateur);
 
 
         return ResponseEntity.ok("Demande de congé soumise avec succès !");
