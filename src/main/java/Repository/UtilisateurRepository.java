@@ -22,6 +22,7 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
 
 
     List<Utilisateur> findByServiceAndRole_Name(Department service, String roleName);
+    List<Utilisateur> findByRole_Name( String roleName);
 
     List<Utilisateur> findByServiceId(Long serviceId);
     long countByServiceId(Long serviceId);

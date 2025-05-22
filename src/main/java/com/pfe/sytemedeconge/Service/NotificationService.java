@@ -64,7 +64,7 @@ public class NotificationService {
 
         if (service != null) {
             // Trouver le chef du service (supposons qu'il n'y ait qu'un seul chef par service)
-            List<Utilisateur> destinataires = utilisateurRepository.findByServiceAndRole_Name(service, "ADMIN");
+            List<Utilisateur> destinataires = utilisateurRepository.findByRole_Name("ADMIN");
 
 
             for (Utilisateur destinataire : destinataires) {
