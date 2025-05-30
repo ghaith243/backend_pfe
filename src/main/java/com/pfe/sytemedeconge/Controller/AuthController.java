@@ -1,6 +1,9 @@
 package com.pfe.sytemedeconge.Controller;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -21,6 +24,7 @@ import com.pfe.sytemedeconge.Service.JwtUtil;
 
 import DTO.AuthRequest;
 import DTO.AuthResponse;
+import DTO.ResetPasswordRequest;
 import Model.Department;
 import Model.Role;
  
@@ -118,8 +122,8 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(
         @RequestParam String email,
         @RequestParam String code,
-        @RequestParam String newPassword
-    ) {
+        @RequestParam String newPassword) {
+        
         Utilisateur user = utilisateurRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Email non trouvé"));
 
@@ -137,7 +141,11 @@ public class AuthController {
         user.setResetCodeExpiration(null);
         utilisateurRepository.save(user);
 
-        return ResponseEntity.ok("Mot de passe mis à jour avec succès !");
+        return ResponseEntity.ok().body(
+        	    Collections.singletonMap("message", "Mot de passe mis à jour avec succès !")
+        	);
+
     }
+
 
 }
